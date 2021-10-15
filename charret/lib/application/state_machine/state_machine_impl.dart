@@ -11,7 +11,7 @@ class StateMachineImpl<R extends MState> implements StateMachine<R> {
     state = _subject.stream;
   }
 
-  BehaviorSubject<R> _subject;
+  final BehaviorSubject<R> _subject;
   R _oldState;
 
   @override

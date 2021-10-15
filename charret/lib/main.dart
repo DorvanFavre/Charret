@@ -1,3 +1,4 @@
+import 'package:charret/application/app/app_impl.dart';
 import 'package:charret/application/app_state_machine/app_state.dart';
 import 'package:charret/application/app_state_machine/loading.dart';
 import 'package:charret/application/state_machine/state_machine_impl.dart';
@@ -5,13 +6,14 @@ import 'package:charret/presentation/wrappers/appState/app_state_wrapper.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import 'application/app/app.dart';
 import 'application/app_state_machine/ready.dart';
 
 void main() {
-  final appStateMachine = StateMachineImpl<AppState>(initialState: Loading());
+  final app = App();
 
   runApp(Provider.value(
-    value: appStateMachine,
+    value: app,
     builder: (context, _) => const MyApp(),
   ));
 }
