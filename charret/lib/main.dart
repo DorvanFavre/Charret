@@ -3,6 +3,7 @@ import 'package:charret/application/app_state_machine/app_state.dart';
 import 'package:charret/application/app_state_machine/loading.dart';
 import 'package:charret/application/state_machine/state_machine_impl.dart';
 import 'package:charret/presentation/wrappers/appState/app_state_wrapper.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
