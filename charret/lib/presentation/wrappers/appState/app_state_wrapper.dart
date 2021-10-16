@@ -1,9 +1,7 @@
-import 'package:charret/application/app/app.dart';
-import 'package:charret/application/app/app_impl.dart';
-import 'package:charret/application/app_state_machine/app_state.dart';
-import 'package:charret/application/app_state_machine/loading.dart';
-import 'package:charret/application/app_state_machine/ready.dart';
-import 'package:charret/application/state_machine/state_machine_impl.dart';
+import 'package:charret/application/states/app/app.dart';
+import 'package:charret/application/states/app_state.dart';
+import 'package:charret/application/states/loading/loading.dart';
+import 'package:charret/application/states/ready/ready.dart';
 import 'package:charret/presentation/screens/loading/loading_screen.dart';
 import 'package:charret/presentation/wrappers/authState/auth_state_wrapper.dart';
 import 'package:flutter/material.dart';
@@ -15,6 +13,7 @@ class AppStateWrapper extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<AppState>(
+        initialData: context.read<App>().appStateMachine.state.value,
         stream: context.read<App>().appStateMachine.state,
         builder: (context, snap) {
           final state = snap.data;

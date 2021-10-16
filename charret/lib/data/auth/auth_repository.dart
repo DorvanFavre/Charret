@@ -1,10 +1,14 @@
-import 'package:charret/application/auth_state_machine/auth_state.dart';
-import 'package:charret/data/auth/auth_repository_impl.dart';
+import 'package:charret/application/models/result.dart';
+import 'package:charret/application/states/auth_state.dart';
+
+import 'auth_repository_impl.dart';
 
 abstract class AuthRepository {
   factory AuthRepository() {
     return AuthRepositoryImpl();
   }
 
-  Future<AuthState> getAuthState();
+  AuthState getAuthState();
+
+  Future<Result> login({required String email, required String password});
 }

@@ -1,6 +1,6 @@
-import 'package:charret/application/app/app_impl.dart';
-import 'package:charret/application/app_state_machine/app_state.dart';
 import 'package:charret/application/state_machine/state_machine.dart';
+import 'package:charret/application/states/app/app_impl.dart';
+import 'package:charret/application/states/app_state.dart';
 
 /// This is the top of the application Layer
 ///

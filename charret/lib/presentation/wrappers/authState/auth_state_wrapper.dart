@@ -1,13 +1,8 @@
-import 'package:charret/application/app/app_impl.dart';
-import 'package:charret/application/app_state_machine/app_state.dart';
-import 'package:charret/application/app_state_machine/loading.dart';
-import 'package:charret/application/app_state_machine/ready.dart';
-import 'package:charret/application/app_state_machine/ready_impl.dart';
-import 'package:charret/application/auth_state_machine/auth_state.dart';
-import 'package:charret/application/auth_state_machine/no_user_logged_in.dart';
-import 'package:charret/application/auth_state_machine/user_logged_in.dart';
+import 'package:charret/application/states/auth_state.dart';
+import 'package:charret/application/states/noUserLoggedIn/no_user_logged_in.dart';
+import 'package:charret/application/states/ready/ready.dart';
+import 'package:charret/application/states/userLoggedIn/user_logged_in.dart';
 import 'package:charret/presentation/screens/auth/auth_screen.dart';
-import 'package:charret/presentation/screens/loading/loading_screen.dart';
 import 'package:charret/presentation/screens/menu/menu_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -18,11 +13,16 @@ class AuthStateWrapper extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<AuthState>(
+        initialData: context.read<Ready>().authStateMachine.state.value,
         stream: context.read<Ready>().authStateMachine.state,
         builder: (context, snap) {
           final state = snap.data;
           if (state is NoUserLoggedIn) {
-            return const AuthScreen();
+            return Provider<NoUserLoggedIn>.value(
+                value: state,
+                builder: (context, _) {
+                  return const AuthScreen();
+                });
           }
           if (state is UserLoggedIn) {
             return const MenuScreen();
