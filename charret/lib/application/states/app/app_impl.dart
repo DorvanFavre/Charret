@@ -29,6 +29,8 @@ class AppImpl implements App {
     // Wait 2 sec
     await Future.delayed(const Duration(seconds: 2));
 
+    //await Firebase.initializeApp();
+
     // Get the current user
     final authState = AuthRepository().getAuthState();
 

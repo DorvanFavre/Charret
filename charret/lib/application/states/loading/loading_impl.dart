@@ -4,14 +4,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'loading.dart';
 
 class LoadingImpl implements Loading {
-  LoadingImpl() {
-    initFirebase();
-  }
-
-  void initFirebase() async {
-    await Firebase.initializeApp();
-    print(FirebaseAuth.instance.app.name);
-  }
+  LoadingImpl();
 
   @override
   void dispose() {

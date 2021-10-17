@@ -5,7 +5,7 @@ import 'package:charret/application/models/result.dart';
 
 class GlobalMessageImpl implements GlobalMessage {
   static final GlobalMessageImpl _singleton = GlobalMessageImpl._internal();
-  final BehaviorSubject messageSubject = BehaviorSubject();
+  final BehaviorSubject<Result> messageSubject = BehaviorSubject();
 
   factory GlobalMessageImpl() {
     return _singleton;
@@ -21,5 +21,5 @@ class GlobalMessageImpl implements GlobalMessage {
   }
 
   @override
-  late final ValueStream messageStream;
+  late final ValueStream<Result> messageStream;
 }

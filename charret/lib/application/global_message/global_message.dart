@@ -8,5 +8,5 @@ abstract class GlobalMessage {
   }
 
   void add(Result result);
-  ValueStream get messageStream;
+  ValueStream<Result> get messageStream;
 }

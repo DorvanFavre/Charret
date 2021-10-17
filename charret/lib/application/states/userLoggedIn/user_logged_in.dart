@@ -6,4 +6,6 @@ abstract class UserLoggedIn extends AuthState {
   factory UserLoggedIn({required AuthUser authUser}) {
     return UserLoggedInImpl(authUser: authUser);
   }
+
+  void logout();
 }

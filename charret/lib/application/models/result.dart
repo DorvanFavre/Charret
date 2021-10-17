@@ -5,17 +5,16 @@ abstract class Result<T> {
   factory Result.failure({String message = ''}) {
     return Failure(message: message);
   }
-  Result();
+  Result({required this.message});
+  final String message;
 }
 
 class Success<T> extends Result<T> {
   final T? data;
-  final String message;
 
-  Success({this.data, this.message = ''});
+  Success({this.data, String message = ''}) : super(message: message);
 }
 
 class Failure<T> extends Result<T> {
-  final String message;
-  Failure({this.message = ''});
+  Failure({String message = ''}) : super(message: message);
 }

@@ -25,7 +25,11 @@ class AuthStateWrapper extends StatelessWidget {
                 });
           }
           if (state is UserLoggedIn) {
-            return const MenuScreen();
+            return Provider<UserLoggedIn>.value(
+                value: state,
+                builder: (context, _) {
+                  return const MenuScreen();
+                });
           }
           return const Center(
             child: Text('ERROR'),
