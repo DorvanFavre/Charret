@@ -1,3 +1,4 @@
+import 'package:charret/application/global_message/global_message.dart';
 import 'package:charret/application/states/noUserLoggedIn/no_user_logged_in.dart';
 import 'package:charret/data/auth/auth_repository.dart';
 
@@ -14,7 +15,18 @@ class NoUserLoggedInImpl implements NoUserLoggedIn {
   @override
   void login() {
     AuthRepository()
-        .login(email: 'test@gmail.com', password: '12345678')
-        .then((result) => print(result));
+        .login(email: loginEmail, password: loginPassword)
+        .then((result) => GlobalMessage().add(result));
+  }
+
+  @override
+  String loginEmail = '';
+
+  @override
+  String loginPassword = '';
+
+  @override
+  void register() {
+    // TODO: implement register
   }
 }

@@ -1,5 +1,6 @@
 import 'package:charret/application/states/app/app.dart';
 import 'package:charret/presentation/wrappers/appState/app_state_wrapper.dart';
+import 'package:charret/presentation/wrappers/global_message.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -22,7 +23,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: const Scaffold(body: AppStateWrapper()),
+      home: const Scaffold(body: GlobalMessageWrapper()),
     );
   }
 }
