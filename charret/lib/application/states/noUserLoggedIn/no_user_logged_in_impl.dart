@@ -1,4 +1,5 @@
 import 'package:charret/application/global_message/global_message.dart';
+import 'package:charret/application/models/result.dart';
 import 'package:charret/application/states/noUserLoggedIn/no_user_logged_in.dart';
 import 'package:charret/data/auth/auth_repository.dart';
 
@@ -27,6 +28,34 @@ class NoUserLoggedInImpl implements NoUserLoggedIn {
 
   @override
   void register() {
-    // TODO: implement register
+    String? errorMessage;
+    if (registerEmail.trim().isEmpty) {
+      errorMessage = 'Enter an email';
+    } else if (!registerEmail.contains('@')) {
+      errorMessage = 'Enter a valid email';
+    } else if (registerPassword.length < 8) {
+      errorMessage = 'Password has to be at least 8 character long';
+    } else if (registerPassword.compareTo(registerRepeatPassword) != 0) {
+      errorMessage = 'Passwords dont match';
+    }
+
+    if (errorMessage != null) {
+      GlobalMessage().add(Failure(message: errorMessage));
+    } else {
+      AuthRepository()
+          .register(email: registerEmail, password: registerPassword)
+          .then((value) {
+        GlobalMessage().add(Success(message: value.message));
+      });
+    }
   }
+
+  @override
+  String registerEmail = '';
+
+  @override
+  String registerPassword = '';
+
+  @override
+  String registerRepeatPassword = '';
 }

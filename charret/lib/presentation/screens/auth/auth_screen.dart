@@ -22,12 +22,25 @@ class _AuthScreenState extends State<AuthScreen> {
     super.initState();
     final state = context.read<NoUserLoggedIn>();
 
+    // Presentation to application
     loginEmailController.addListener(() {
       state.loginEmail = loginEmailController.text;
     });
 
     loginPasswordController.addListener(() {
       state.loginPassword = loginPasswordController.text;
+    });
+
+    registerEmailController.addListener(() {
+      state.registerEmail = registerEmailController.text;
+    });
+
+    registerPasswordController.addListener(() {
+      state.registerPassword = registerPasswordController.text;
+    });
+
+    registerRepeatPasswordController.addListener(() {
+      state.registerRepeatPassword = registerRepeatPasswordController.text;
     });
   }
 

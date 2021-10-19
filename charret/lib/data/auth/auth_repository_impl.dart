@@ -53,4 +53,12 @@ class AuthRepositoryImpl implements AuthRepository {
             : UserLoggedIn(authUser: AuthUserExtension.fromUser(user: user)))
         .shareValue();
   }
+
+  @override
+  Future<Result> register({required String email, required String password}) {
+    return FirebaseAuth.instance
+        .createUserWithEmailAndPassword(email: email, password: password)
+        .then((value) => Result.success(message: 'Account created'))
+        .catchError((e) => Result.failure(message: e.toString()));
+  }
 }

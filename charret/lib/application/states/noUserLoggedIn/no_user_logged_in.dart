@@ -10,4 +10,7 @@ abstract class NoUserLoggedIn extends AuthState {
   void register();
   String loginEmail = '';
   String loginPassword = '';
+  String registerEmail = '';
+  String registerPassword = '';
+  String registerRepeatPassword = '';
 }
