@@ -4,7 +4,7 @@ class Game {
   final String player1Uid;
   final String player2Uid;
 
-  final List<List<List<int>>> board;
+  final dynamic board;
 
   final int player1RemainingTokens;
   final int player2RemainingTokens;

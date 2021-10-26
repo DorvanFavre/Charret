@@ -8,5 +8,9 @@ abstract class GameRepository {
     return GameRepositoryImpl(currentAuthUser: currentAuthUser);
   }
 
+  // receive a game instance when a new game in which the current user play is created
   ValueStream<Game?> userGameStream();
+
+  // Get the game changes (new instance for every changement)
+  ValueStream<Game> gameStream({required String gameId});
 }

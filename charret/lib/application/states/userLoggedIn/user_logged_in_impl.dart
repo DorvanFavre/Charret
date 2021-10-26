@@ -16,17 +16,21 @@ import 'package:charret/data/search/search_repository.dart';
 class UserLoggedInImpl implements UserLoggedIn {
   UserLoggedInImpl({required this.currentAuthUser}) {
     //print('UserLoggedInImpl ${this.hashCode}: create');
+
     // Listen for games
     gameSubscription = GameRepository(currentAuthUser: currentAuthUser)
         .userGameStream()
         .listen((game) {
+      print(menuStateMachine.state.value);
       if (game != null) {
-        menuStateMachine.add(InGame(game: game));
+        if (menuStateMachine.state.value is InMenu) {
+          GlobalMessage().add(Result.success(message: 'Game found'));
+          menuStateMachine
+              .add(InGame(game: game, currentAuthUser: currentAuthUser));
+        }
       } else {
         menuStateMachine.add(InMenu());
       }
-
-      print('UserLoggedInImpl ${this.hashCode}: game found! $game');
     });
   }
 
