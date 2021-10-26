@@ -4,6 +4,7 @@ import 'package:charret/application/states/ready/ready.dart';
 import 'package:charret/application/states/userLoggedIn/user_logged_in.dart';
 import 'package:charret/presentation/screens/auth/auth_screen.dart';
 import 'package:charret/presentation/screens/menu/menu_screen.dart';
+import 'package:charret/presentation/wrappers/userLoggedInWrapper/user_logged_in_wrapper.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -28,7 +29,7 @@ class AuthStateWrapper extends StatelessWidget {
             return Provider<UserLoggedIn>.value(
                 value: state,
                 builder: (context, _) {
-                  return const MenuScreen();
+                  return const UserLoggedInWrapper();
                 });
           }
           return const Center(
