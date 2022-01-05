@@ -1,5 +1,6 @@
 import 'package:charret/application/models/auth_user.dart';
 import 'package:charret/application/models/game.dart';
+import 'package:charret/application/models/move.dart';
 import 'package:charret/data/game/game_repository_impl.dart';
 import 'package:rxdart/rxdart.dart';
 
@@ -13,4 +14,8 @@ abstract class GameRepository {
 
   // Get the game changes (new instance for every changement)
   ValueStream<Game> gameStream({required String gameId});
+
+  void sendAction({required Move move, required String gameId});
+
+  void deleteGame({required String gameId});
 }

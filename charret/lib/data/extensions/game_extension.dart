@@ -6,6 +6,7 @@ extension GameExtension on Game {
   static const player2RemainingTokensField = 'player2RemainingTokens';
   static const boardField = 'board';
   static const stateField = 'state';
+  static const moveField = 'move';
 
   static Game fromDoc(
       {required Map<String, dynamic> doc, required String uid}) {
@@ -19,6 +20,7 @@ extension GameExtension on Game {
     final dynamic board = doc[boardField];
     print(board.runtimeType);
     final String state = doc[stateField] ?? 'null';
+    final String move = doc[moveField] ?? 'null';
 
     return Game(
         uid: uid,
@@ -27,6 +29,7 @@ extension GameExtension on Game {
         player1RemainingTokens: player1RemainingTokens,
         player2RemainingTokens: player2RemainingTokens,
         board: board,
+        move: move,
         state: state);
   }
 }

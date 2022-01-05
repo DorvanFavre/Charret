@@ -23,7 +23,8 @@ class UserLoggedInImpl implements UserLoggedIn {
         .listen((game) {
       print(menuStateMachine.state.value);
       if (game != null) {
-        if (menuStateMachine.state.value is InMenu) {
+        if (menuStateMachine.state.value is InMenu ||
+            menuStateMachine.state.value is SearchGame) {
           GlobalMessage().add(Result.success(message: 'Game found'));
           menuStateMachine
               .add(InGame(game: game, currentAuthUser: currentAuthUser));

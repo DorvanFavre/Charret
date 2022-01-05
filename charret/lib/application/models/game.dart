@@ -15,6 +15,7 @@ class Game {
   /// 10: player 1 won
   /// 12: player 2 won
   final String state;
+  final String move;
 
   Game(
       {required this.uid,
@@ -23,5 +24,6 @@ class Game {
       required this.player1RemainingTokens,
       required this.player2RemainingTokens,
       required this.board,
-      required this.state});
+      required this.state,
+      required this.move});
 }

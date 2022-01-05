@@ -33,6 +33,7 @@ class MenuScreen extends StatelessWidget {
                         child: ElevatedButton(
                           child: const Text('Logout'),
                           onPressed: () {
+                            Navigator.of(context).pop();
                             userLoggedInState.logout();
                           },
                         )),
