@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:charret/application/global_message/global_message.dart';
 import 'package:charret/application/models/auth_user.dart';
+import 'package:charret/application/models/data_user.dart';
 import 'package:charret/application/models/result.dart';
 import 'package:charret/application/states/inGame/in_game.dart';
 import 'package:charret/application/states/inMenu/in_menu.dart';
@@ -10,8 +11,10 @@ import 'package:charret/application/state_machine/state_machine.dart';
 import 'package:charret/application/states/searchGame/search_game.dart';
 import 'package:charret/application/states/userLoggedIn/user_logged_in.dart';
 import 'package:charret/data/auth/auth_repository.dart';
+import 'package:charret/data/data_user/data_user_repository.dart';
 import 'package:charret/data/game/game_repository.dart';
 import 'package:charret/data/search/search_repository.dart';
+import 'package:rxdart/src/streams/value_stream.dart';
 
 class UserLoggedInImpl implements UserLoggedIn {
   UserLoggedInImpl({required this.currentAuthUser}) {
@@ -26,12 +29,16 @@ class UserLoggedInImpl implements UserLoggedIn {
         if (menuStateMachine.state.value is InMenu ||
             menuStateMachine.state.value is SearchGame) {
           GlobalMessage().add(Result.success(message: 'Game found'));
-          menuStateMachine
-              .add(InGame(game: game, currentAuthUser: currentAuthUser));
+          menuStateMachine.add(InGame(
+              game: game,
+              currentAuthUser: currentAuthUser,
+              goToMenu: () {
+                menuStateMachine.add(InMenu());
+              }));
         }
-      } else {
+      } /*else {
         menuStateMachine.add(InMenu());
-      }
+      }*/
     });
   }
 
@@ -79,5 +86,16 @@ class UserLoggedInImpl implements UserLoggedIn {
         GlobalMessage().add(result);
       }
     });
+  }
+
+  @override
+  ValueStream<DataUser> getDataUserStream() {
+    return DataUserRepository(currentAuthUser: currentAuthUser)
+        .getDataUserStream();
+  }
+
+  @override
+  void setUserName(String name) {
+    DataUserRepository(currentAuthUser: currentAuthUser).setUserName(name);
   }
 }

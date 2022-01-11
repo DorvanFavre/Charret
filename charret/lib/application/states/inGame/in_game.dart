@@ -6,8 +6,14 @@ import 'package:charret/application/states/menu_state.dart';
 import 'package:rxdart/rxdart.dart';
 
 abstract class InGame extends MenuState {
-  factory InGame({required Game game, required AuthUser currentAuthUser}) {
-    return InGameImpl(initialGame: game, currentAuthUser: currentAuthUser);
+  factory InGame(
+      {required Game game,
+      required AuthUser currentAuthUser,
+      required Function goToMenu}) {
+    return InGameImpl(
+        initialGame: game,
+        currentAuthUser: currentAuthUser,
+        goToMenu_: goToMenu);
   }
 
   // Game received by the database
@@ -17,4 +23,7 @@ abstract class InGame extends MenuState {
   void leave();
   void makeAMove({required Move move});
   String? tokenToMove;
+  Function goToMenu();
+
+  Future<String> getOpponentName();
 }

@@ -3,39 +3,12 @@ const admin = require("firebase-admin");
 admin.initializeApp();
 
 
+//firebase deploy --only functions:func1,functions:func2
+
+//firebase deploy --only hosting
 
 
 
-exports.onNewUserInWaitingRoom = functions.firestore
-    .document('WaitingRoom/{uid}')
-    .onCreate((event) => {
-        let uid = event.ref.id;
-        return admin.firestore().collection('WaitingRoom').get().then(
-            async (snap) => {
-                if (snap.docs.length >= 2) {
-                    let player_1_uid = snap.docs[0].id
-                    let player_2_uid = snap.docs[1].id
-
-                    await admin.firestore().collection('WaitingRoom').doc(player_1_uid).delete();
-                    await admin.firestore().collection('WaitingRoom').doc(player_2_uid).delete();
-                    await admin.firestore().collection('Games').add({
-                        playersUids: [player_1_uid, player_2_uid],
-                        state: 'do_nothing',
-                        board: { '000': 0, '001': 0, '002': 0, '003': 0, '010': 0, '011': 0, '012': 0, '020': 0, '021': 0, '022': 0, '100': 0, '101': 0, '102': 0, '103': 0, '110': 0, '111': 0, '112': 0, '120': 0, '121': 0, '122': 0, '200': 0, '201': 0, '202': 0, '203': 0, '210': 0, '211': 0, '212': 0, '220': 0, '221': 0, '222': 0 },
-                        player1RemainingTokens: 9,
-                        player2RemainingTokens: 9
-                    });
-
-                    functions.logger.log('New created');
-                    return null;
-                }
-                else {
-                    functions.logger.log('Not enough players yet');
-                    return null;
-                }
-            }
-        )
-    });
 exports.onNewUserInWaitingRoom = functions.firestore
     .document('WaitingRoom/{uid}')
     .onCreate((event) => {
@@ -55,7 +28,8 @@ exports.onNewUserInWaitingRoom = functions.firestore
                         move: 'add_token',
                         board: { '000': 0, '001': 0, '002': 0, '003': 0, '010': 0, '011': 0, '012': 0, '020': 0, '021': 0, '022': 0, '100': 0, '101': 0, '102': 0, '103': 0, '110': 0, '111': 0, '112': 0, '120': 0, '121': 0, '122': 0, '200': 0, '201': 0, '202': 0, '203': 0, '210': 0, '211': 0, '212': 0, '220': 0, '221': 0, '222': 0 },
                         player1RemainingTokens: 9,
-                        player2RemainingTokens: 9
+                        player2RemainingTokens: 9,
+                        isFinished: false
                     });
 
                     functions.logger.log('New created');
@@ -98,18 +72,40 @@ exports.onMoveCreated = functions.firestore
                 const playerNumber = game.data().playersUids[0] == player ? 1 : 2;
                 const otherPlayerNumber = playerNumber == 1 ? 2 : 1;
 
-                // if it's not the player's turn
-                if ((state == 'player_1_has_to_play' && playerNumber == 2) || (state == 'player_2_has_to_play' && playerNumber == 1)) {
-                    console.log("It's not the player's turn");
-                    return;
-                }
-
                 let board = game.data().board;
                 let gameMove = game.data().move;
                 let player1RemainingTokens = game.data().player1RemainingTokens;
                 let player2RemainingTokens = game.data().player2RemainingTokens;
                 let nextMove = gameMove;
                 let nextState = state;
+                let isFinished = false;
+                
+
+
+                // check if its an abort request
+                if(type == 'abort' && state != 'player_1_has_won' && state != 'player_2_has_won'){
+                    console.log("player abort the game");
+
+                    const nextState = `player_${otherPlayerNumber}_has_won`;
+                    return admin.firestore().collection('Games').doc(gameDocId).update({
+                        state: nextState,
+                        isFinished: true,
+                    });
+    
+                }
+
+
+
+                // if it's not the player's turn
+                if ((state == 'player_1_has_to_play' && playerNumber == 2) || (state == 'player_2_has_to_play' && playerNumber == 1)) {
+                    console.log("It's not the player's turn");
+                    return;
+                }
+
+                
+
+
+                
 
                 function combo(token1, token2, token3) {
                     if (movedToken == token1 || movedToken == token2 || movedToken == token3) {
@@ -262,6 +258,7 @@ exports.onMoveCreated = functions.firestore
                     
                     if(numberOfTokenOnBoard<3){
                         nextState = `player_${playerNumber}_has_won`;
+                        isFinished = true;
                     }
                 }
                 
@@ -275,6 +272,7 @@ exports.onMoveCreated = functions.firestore
                     player1RemainingTokens: player1RemainingTokens,
                     player2RemainingTokens: player2RemainingTokens,
                     move: nextMove,
+                    isFinished: isFinished
                 });
 
             })

@@ -7,6 +7,7 @@ extension GameExtension on Game {
   static const boardField = 'board';
   static const stateField = 'state';
   static const moveField = 'move';
+  static const isFinished = 'isFinished';
 
   static Game fromDoc(
       {required Map<String, dynamic> doc, required String uid}) {

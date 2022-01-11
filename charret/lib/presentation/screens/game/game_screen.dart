@@ -44,303 +44,368 @@ class _GameScreenState extends State<GameScreen> {
               icon: const Icon(FontAwesomeIcons.cog))
         ],
       ),
-      body: StreamBuilder<Game>(
-          initialData: inGameState.initialGame,
-          stream: inGameState.gameStream,
-          builder: (context, snap) {
-            final game = snap.data!;
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          FutureBuilder<String>(
+              future: inGameState.getOpponentName(),
+              initialData: '',
+              builder: (context, snap) {
+                return Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text(
+                    snap.data ?? 'Unknown',
+                    style: Theme.of(context).textTheme.headline4,
+                  ),
+                );
+              }),
+          Expanded(
+            child: StreamBuilder<Game>(
+                initialData: inGameState.initialGame,
+                stream: inGameState.gameStream,
+                builder: (context, snap) {
+                  final game = snap.data!;
 
-            bool isCurrentPlayerPlayer1() {
-              return game.player1Uid == inGameState.currentAuthUser.uid;
-            }
+                  bool isCurrentPlayerPlayer1() {
+                    return game.player1Uid == inGameState.currentAuthUser.uid;
+                  }
 
-            // Functions
-            Widget tokensInHand(bool isPlayer1) {
-              return Container(
-                height: 50,
-                child: Row(mainAxisAlignment: MainAxisAlignment.end, children: [
-                  for (int i = 0;
-                      i <
-                          (isPlayer1
-                              ? game.player1RemainingTokens
-                              : game.player2RemainingTokens);
-                      i++)
-                    Container(
-                        padding: EdgeInsets.all(5),
-                        height: 30,
-                        width: 30,
-                        child: Skin(
-                            isCurrentPlayer:
-                                isPlayer1 == isCurrentPlayerPlayer1()))
-                ]),
-              );
-            }
+                  // Functions
+                  Widget tokensInHand(bool isPlayer1) {
+                    return Container(
+                      height: 50,
+                      child: Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            for (int i = 0;
+                                i <
+                                    (isPlayer1
+                                        ? game.player1RemainingTokens
+                                        : game.player2RemainingTokens);
+                                i++)
+                              Container(
+                                  padding: EdgeInsets.all(5),
+                                  height: 30,
+                                  width: 30,
+                                  child: Skin(
+                                      isCurrentPlayer: isPlayer1 ==
+                                          isCurrentPlayerPlayer1()))
+                          ]),
+                    );
+                  }
 
-            bool isPlayerTurn() {
-              return (game.state == 'player_1_has_to_play' &&
-                      game.player1Uid == inGameState.currentAuthUser.uid) ||
-                  (game.state == 'player_2_has_to_play' &&
-                      game.player2Uid == inGameState.currentAuthUser.uid);
-            }
+                  bool isPlayerTurn() {
+                    return (game.state == 'player_1_has_to_play' &&
+                            game.player1Uid ==
+                                inGameState.currentAuthUser.uid) ||
+                        (game.state == 'player_2_has_to_play' &&
+                            game.player2Uid == inGameState.currentAuthUser.uid);
+                  }
 
-            return GestureDetector(
-              onTap: () {
-                setState(() {
-                  inGameState.tokenToMove = null;
-                });
-              },
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Column(
-                  children: [
-                    // Top Message
-                    Center(
-                      child: Text(isPlayerTurn() ? 'Your turn' : 'Wait...'),
-                    ),
-                    isPlayerTurn()
-                        ? Center(
-                            child: Text(game.move),
-                          )
-                        : SizedBox.shrink(),
+                  // End of the game -> show dialog
+                  if (game.state == 'player_1_has_won' ||
+                      game.state == 'player_2_has_won') {
+                    Future.delayed(
+                        Duration(milliseconds: 300),
+                        () => showDialog(
+                              context: context,
+                              builder: (context) => Container(
+                                color: Colors.white,
+                                child: Padding(
+                                    padding: const EdgeInsets.all(50),
+                                    child: Column(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Text(
+                                          ((game.state == 'player_1_has_won') &&
+                                                  isCurrentPlayerPlayer1())
+                                              ? 'You won !'
+                                              : 'You loose...',
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .headline2,
+                                        ),
+                                        ElevatedButton(
+                                          child: Padding(
+                                            padding: const EdgeInsets.all(8.0),
+                                            child: Text('Go to menu'),
+                                          ),
+                                          onPressed: () {
+                                            inGameState.leave();
+                                            Navigator.of(context).pop();
+                                            inGameState.goToMenu();
+                                          },
+                                        ),
+                                      ],
+                                    )),
+                              ),
+                            ));
+                  }
 
-                    // player tokens
-                    tokensInHand(!isCurrentPlayerPlayer1()),
+                  return GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        inGameState.tokenToMove = null;
+                      });
+                    },
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Column(
+                        children: [
+                          // Top Message
+                          Center(
+                            child: Text(
+                              isPlayerTurn() ? 'Your turn' : 'Wait...',
+                              style: Theme.of(context).textTheme.headline5,
+                            ),
+                          ),
+                          /*isPlayerTurn()
+                              ? Center(
+                                  child: Text(game.move, ),
+                                )
+                              : SizedBox.shrink(),*/
 
-                    // Board
-                    Expanded(
-                      child: Center(
-                        child: AspectRatio(
-                          aspectRatio: 1,
-                          child: Stack(
-                            children: [
-                              /*const Image(
-                                image: AssetImage('assets/e.jpg'),
-                              ),*/
-                              Padding(
-                                padding: const EdgeInsets.only(
-                                    top: 35.0, left: 30.0, bottom: 30),
-                                child: Image.asset(
-                                  'assets/plateau.png',
-                                  fit: BoxFit.contain,
+                          // player tokens
+                          tokensInHand(!isCurrentPlayerPlayer1()),
+
+                          // Board
+                          Expanded(
+                            child: Center(
+                              child: AspectRatio(
+                                aspectRatio: 1,
+                                child: Stack(
+                                  children: [
+                                    /*const Image(
+                                      image: AssetImage('assets/e.jpg'),
+                                    ),*/
+                                    Padding(
+                                      padding: const EdgeInsets.only(
+                                          top: 35.0, left: 30.0, bottom: 30),
+                                      child: Image.asset(
+                                        'assets/plateau.png',
+                                        fit: BoxFit.contain,
+                                      ),
+                                    ),
+                                    GridView.count(
+                                      crossAxisCount: 7,
+                                      children: [
+                                        Token(
+                                          value: '000',
+                                          game: game,
+                                          setState: () {
+                                            setState(() {});
+                                          },
+                                        ),
+                                        SizedBox.shrink(),
+                                        SizedBox.shrink(),
+                                        Token(
+                                          value: '001',
+                                          game: game,
+                                          setState: () {
+                                            setState(() {});
+                                          },
+                                        ),
+                                        SizedBox.shrink(),
+                                        SizedBox.shrink(),
+                                        Token(
+                                          value: '002',
+                                          game: game,
+                                          setState: () {
+                                            setState(() {});
+                                          },
+                                        ),
+                                        //
+                                        SizedBox.shrink(),
+                                        Token(
+                                          value: '100',
+                                          game: game,
+                                          setState: () {
+                                            setState(() {});
+                                          },
+                                        ),
+                                        SizedBox.shrink(),
+                                        Token(
+                                          value: '101',
+                                          game: game,
+                                          setState: () {
+                                            setState(() {});
+                                          },
+                                        ),
+                                        SizedBox.shrink(),
+                                        Token(
+                                          value: '102',
+                                          game: game,
+                                          setState: () {
+                                            setState(() {});
+                                          },
+                                        ),
+                                        SizedBox.shrink(),
+                                        //
+                                        SizedBox.shrink(),
+                                        SizedBox.shrink(),
+                                        Token(
+                                          value: '200',
+                                          game: game,
+                                          setState: () {
+                                            setState(() {});
+                                          },
+                                        ),
+                                        Token(
+                                          value: '201',
+                                          game: game,
+                                          setState: () {
+                                            setState(() {});
+                                          },
+                                        ),
+                                        Token(
+                                          value: '202',
+                                          game: game,
+                                          setState: () {
+                                            setState(() {});
+                                          },
+                                        ),
+                                        SizedBox.shrink(),
+                                        SizedBox.shrink(),
+                                        //
+                                        Token(
+                                          value: '010',
+                                          game: game,
+                                          setState: () {
+                                            setState(() {});
+                                          },
+                                        ),
+                                        Token(
+                                          value: '110',
+                                          game: game,
+                                          setState: () {
+                                            setState(() {});
+                                          },
+                                        ),
+                                        Token(
+                                          value: '210',
+                                          game: game,
+                                          setState: () {
+                                            setState(() {});
+                                          },
+                                        ),
+                                        SizedBox.shrink(),
+                                        Token(
+                                          value: '212',
+                                          game: game,
+                                          setState: () {
+                                            setState(() {});
+                                          },
+                                        ),
+                                        Token(
+                                          value: '112',
+                                          game: game,
+                                          setState: () {
+                                            setState(() {});
+                                          },
+                                        ),
+                                        Token(
+                                          value: '012',
+                                          game: game,
+                                          setState: () {
+                                            setState(() {});
+                                          },
+                                        ),
+                                        //
+                                        SizedBox.shrink(),
+                                        SizedBox.shrink(),
+                                        Token(
+                                          value: '220',
+                                          game: game,
+                                          setState: () {
+                                            setState(() {});
+                                          },
+                                        ),
+                                        Token(
+                                          value: '221',
+                                          game: game,
+                                          setState: () {
+                                            setState(() {});
+                                          },
+                                        ),
+                                        Token(
+                                          value: '222',
+                                          game: game,
+                                          setState: () {
+                                            setState(() {});
+                                          },
+                                        ),
+                                        SizedBox.shrink(),
+                                        SizedBox.shrink(),
+                                        //
+                                        SizedBox.shrink(),
+                                        Token(
+                                          value: '120',
+                                          game: game,
+                                          setState: () {
+                                            setState(() {});
+                                          },
+                                        ),
+                                        SizedBox.shrink(),
+                                        Token(
+                                          value: '121',
+                                          game: game,
+                                          setState: () {
+                                            setState(() {});
+                                          },
+                                        ),
+                                        SizedBox.shrink(),
+                                        Token(
+                                          value: '122',
+                                          game: game,
+                                          setState: () {
+                                            setState(() {});
+                                          },
+                                        ),
+                                        SizedBox.shrink(),
+                                        //
+                                        Token(
+                                          value: '020',
+                                          game: game,
+                                          setState: () {
+                                            setState(() {});
+                                          },
+                                        ),
+                                        SizedBox.shrink(),
+                                        SizedBox.shrink(),
+                                        Token(
+                                          value: '021',
+                                          game: game,
+                                          setState: () {
+                                            setState(() {});
+                                          },
+                                        ),
+                                        SizedBox.shrink(),
+                                        SizedBox.shrink(),
+                                        Token(
+                                          value: '022',
+                                          game: game,
+                                          setState: () {
+                                            setState(() {});
+                                          },
+                                        ),
+                                      ],
+                                    ),
+                                  ],
                                 ),
                               ),
-                              GridView.count(
-                                crossAxisCount: 7,
-                                children: [
-                                  Token(
-                                    value: '000',
-                                    game: game,
-                                    setState: () {
-                                      setState(() {});
-                                    },
-                                  ),
-                                  SizedBox.shrink(),
-                                  SizedBox.shrink(),
-                                  Token(
-                                    value: '001',
-                                    game: game,
-                                    setState: () {
-                                      setState(() {});
-                                    },
-                                  ),
-                                  SizedBox.shrink(),
-                                  SizedBox.shrink(),
-                                  Token(
-                                    value: '002',
-                                    game: game,
-                                    setState: () {
-                                      setState(() {});
-                                    },
-                                  ),
-                                  //
-                                  SizedBox.shrink(),
-                                  Token(
-                                    value: '100',
-                                    game: game,
-                                    setState: () {
-                                      setState(() {});
-                                    },
-                                  ),
-                                  SizedBox.shrink(),
-                                  Token(
-                                    value: '101',
-                                    game: game,
-                                    setState: () {
-                                      setState(() {});
-                                    },
-                                  ),
-                                  SizedBox.shrink(),
-                                  Token(
-                                    value: '102',
-                                    game: game,
-                                    setState: () {
-                                      setState(() {});
-                                    },
-                                  ),
-                                  SizedBox.shrink(),
-                                  //
-                                  SizedBox.shrink(),
-                                  SizedBox.shrink(),
-                                  Token(
-                                    value: '200',
-                                    game: game,
-                                    setState: () {
-                                      setState(() {});
-                                    },
-                                  ),
-                                  Token(
-                                    value: '201',
-                                    game: game,
-                                    setState: () {
-                                      setState(() {});
-                                    },
-                                  ),
-                                  Token(
-                                    value: '202',
-                                    game: game,
-                                    setState: () {
-                                      setState(() {});
-                                    },
-                                  ),
-                                  SizedBox.shrink(),
-                                  SizedBox.shrink(),
-                                  //
-                                  Token(
-                                    value: '010',
-                                    game: game,
-                                    setState: () {
-                                      setState(() {});
-                                    },
-                                  ),
-                                  Token(
-                                    value: '110',
-                                    game: game,
-                                    setState: () {
-                                      setState(() {});
-                                    },
-                                  ),
-                                  Token(
-                                    value: '210',
-                                    game: game,
-                                    setState: () {
-                                      setState(() {});
-                                    },
-                                  ),
-                                  SizedBox.shrink(),
-                                  Token(
-                                    value: '212',
-                                    game: game,
-                                    setState: () {
-                                      setState(() {});
-                                    },
-                                  ),
-                                  Token(
-                                    value: '112',
-                                    game: game,
-                                    setState: () {
-                                      setState(() {});
-                                    },
-                                  ),
-                                  Token(
-                                    value: '012',
-                                    game: game,
-                                    setState: () {
-                                      setState(() {});
-                                    },
-                                  ),
-                                  //
-                                  SizedBox.shrink(),
-                                  SizedBox.shrink(),
-                                  Token(
-                                    value: '220',
-                                    game: game,
-                                    setState: () {
-                                      setState(() {});
-                                    },
-                                  ),
-                                  Token(
-                                    value: '221',
-                                    game: game,
-                                    setState: () {
-                                      setState(() {});
-                                    },
-                                  ),
-                                  Token(
-                                    value: '222',
-                                    game: game,
-                                    setState: () {
-                                      setState(() {});
-                                    },
-                                  ),
-                                  SizedBox.shrink(),
-                                  SizedBox.shrink(),
-                                  //
-                                  SizedBox.shrink(),
-                                  Token(
-                                    value: '120',
-                                    game: game,
-                                    setState: () {
-                                      setState(() {});
-                                    },
-                                  ),
-                                  SizedBox.shrink(),
-                                  Token(
-                                    value: '121',
-                                    game: game,
-                                    setState: () {
-                                      setState(() {});
-                                    },
-                                  ),
-                                  SizedBox.shrink(),
-                                  Token(
-                                    value: '122',
-                                    game: game,
-                                    setState: () {
-                                      setState(() {});
-                                    },
-                                  ),
-                                  SizedBox.shrink(),
-                                  //
-                                  Token(
-                                    value: '020',
-                                    game: game,
-                                    setState: () {
-                                      setState(() {});
-                                    },
-                                  ),
-                                  SizedBox.shrink(),
-                                  SizedBox.shrink(),
-                                  Token(
-                                    value: '021',
-                                    game: game,
-                                    setState: () {
-                                      setState(() {});
-                                    },
-                                  ),
-                                  SizedBox.shrink(),
-                                  SizedBox.shrink(),
-                                  Token(
-                                    value: '022',
-                                    game: game,
-                                    setState: () {
-                                      setState(() {});
-                                    },
-                                  ),
-                                ],
-                              ),
-                            ],
+                            ),
                           ),
-                        ),
+
+                          // player tokens
+                          tokensInHand(isCurrentPlayerPlayer1()),
+                        ],
                       ),
                     ),
-
-                    // player tokens
-                    tokensInHand(isCurrentPlayerPlayer1()),
-                  ],
-                ),
-              ),
-            );
-          }),
+                  );
+                }),
+          ),
+        ],
+      ),
     );
   }
 }

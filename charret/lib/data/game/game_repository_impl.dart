@@ -21,6 +21,7 @@ class GameRepositoryImpl implements GameRepository {
     return FirebaseFirestore.instance
         .collection(gamesCollection)
         .where(GameExtension.usersIdsField, arrayContains: currentAuthUser.uid)
+        .where(GameExtension.isFinished, isEqualTo: false)
         .snapshots()
         .map((snap) {
       if (snap.docs.isEmpty) return null;
