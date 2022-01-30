@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:charret/application/models/game.dart';
 import 'package:charret/application/models/move.dart';
 import 'package:charret/application/states/inGame/in_game.dart';
+import 'package:charret/presentation/widgets/breath_animation.dart';
 import 'package:charret/presentation/widgets/skin.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -154,13 +155,16 @@ class Token extends StatelessWidget {
             isEmtpy()
                 ? SizedBox.shrink()
                 : Skin(isCurrentPlayer: isCurrentPlayerToken()),
-            Container(
-              decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  border: Border.all(
-                      color:
-                          highlightToken() ? Colors.amber : Colors.transparent,
-                      width: 3)),
+            BreathAnimation(
+              child: Container(
+                decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    border: Border.all(
+                        color: highlightToken()
+                            ? Colors.amber
+                            : Colors.transparent,
+                        width: 3)),
+              ),
             ),
             //
           ],

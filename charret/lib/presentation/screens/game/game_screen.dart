@@ -45,7 +45,7 @@ class _GameScreenState extends State<GameScreen> {
         ],
       ),
       body: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           FutureBuilder<String>(
               future: inGameState.getOpponentName(),
@@ -75,7 +75,8 @@ class _GameScreenState extends State<GameScreen> {
                     return Container(
                       height: 50,
                       child: Row(
-                          mainAxisAlignment: MainAxisAlignment.end,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          mainAxisSize: MainAxisSize.min,
                           children: [
                             for (int i = 0;
                                 i <
@@ -108,36 +109,34 @@ class _GameScreenState extends State<GameScreen> {
                     Future.delayed(
                         Duration(milliseconds: 300),
                         () => showDialog(
+                              barrierDismissible: false,
                               context: context,
-                              builder: (context) => Container(
-                                color: Colors.white,
-                                child: Padding(
-                                    padding: const EdgeInsets.all(50),
-                                    child: Column(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        Text(
-                                          ((game.state == 'player_1_has_won') &&
-                                                  isCurrentPlayerPlayer1())
-                                              ? 'You won !'
-                                              : 'You loose...',
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .headline2,
-                                        ),
-                                        ElevatedButton(
-                                          child: Padding(
-                                            padding: const EdgeInsets.all(8.0),
-                                            child: Text('Go to menu'),
-                                          ),
-                                          onPressed: () {
-                                            inGameState.leave();
-                                            Navigator.of(context).pop();
-                                            inGameState.goToMenu();
-                                          },
-                                        ),
-                                      ],
-                                    )),
+                              builder: (context) => SimpleDialog(
+                                contentPadding: EdgeInsets.all(50),
+                                children: [
+                                  Text(
+                                    (((game.state == 'player_1_has_won') &&
+                                                isCurrentPlayerPlayer1()) ||
+                                            ((game.state ==
+                                                    'player_2_has_won') &&
+                                                !isCurrentPlayerPlayer1()))
+                                        ? 'You won !'
+                                        : 'You loose...',
+                                    style:
+                                        Theme.of(context).textTheme.headline2,
+                                  ),
+                                  ElevatedButton(
+                                    child: const Padding(
+                                      padding: EdgeInsets.all(8.0),
+                                      child: Text('Go to menu'),
+                                    ),
+                                    onPressed: () {
+                                      inGameState.leave();
+                                      Navigator.of(context).pop();
+                                      inGameState.goToMenu();
+                                    },
+                                  ),
+                                ],
                               ),
                             ));
                   }

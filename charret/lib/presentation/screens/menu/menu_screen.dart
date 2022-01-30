@@ -75,9 +75,9 @@ class _MenuScreenState extends State<MenuScreen> {
       // Body
       body: Padding(
         padding: const EdgeInsets.all(20.0),
-        child: Center(
-            child: Column(
-          mainAxisSize: MainAxisSize.min,
+        child: Column(
+          //mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
             // User data
 
@@ -86,7 +86,16 @@ class _MenuScreenState extends State<MenuScreen> {
               style: Theme.of(context).textTheme.headline3,
             ),
 
-            Spacer(),
+            Center(
+              child: Container(
+                height: 200,
+                width: 200,
+                child: Image.asset(
+                  'assets/logo.png',
+                  fit: BoxFit.contain,
+                ),
+              ),
+            ),
 
             // Button
             ElevatedButton(
@@ -99,8 +108,10 @@ class _MenuScreenState extends State<MenuScreen> {
                 userLoggedInState.searchGame();
               },
             ),
+
+            //Text('Powered by Dorvan')
           ],
-        )),
+        ),
       ),
     );
   }
